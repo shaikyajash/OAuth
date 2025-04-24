@@ -36,6 +36,10 @@ app.use((err, req, res, next) => {
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 // Routes
+app.get('/test', (req, res) => {
+  res.send("It is working");
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 
