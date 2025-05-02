@@ -9,8 +9,6 @@ require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 
-// Connect to Database
-connectDB();
 
 const app = express();
 
