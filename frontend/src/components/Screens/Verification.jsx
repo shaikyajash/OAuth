@@ -17,7 +17,6 @@ const Verification = () => {
     const verifyEmail = async () => {
       try {
         const url = `${BACKEND_URL}/auth/verify-email/${token}`;
-        console.log("Verification URL:", url);
         const res = await axios.get(url);
         setMessage(res.data.message);
       } catch (err) {

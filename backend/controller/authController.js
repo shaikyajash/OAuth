@@ -30,7 +30,7 @@ const register = async (req, res) => {
     const verifyToken = user.generateToken();
     await user.save();
     // Send verification email
-    const verificationUrl = `http://${process.env.FRONTEND_URL}/verify-email/${verifyToken}`;
+    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verifyToken}`;
 
     const message = `
     <p>Please verify your email by clicking the button below:</p>
@@ -39,6 +39,7 @@ const register = async (req, res) => {
       Verify Your Email
       </a>
         `;
+        
 
     await sendEmail({
       email: user.email,
@@ -70,6 +71,7 @@ const googleAuth = async (req, res) => {
     const ticket = await client.verifyIdToken({
       idToken: idtoken,
       audience: process.env.GOOGLE_CLIENT_ID,
+
     });
 
     const { name, email, picture, sub: googleId } = ticket.getPayload();
@@ -144,7 +146,7 @@ const login = async (req, res) => {
       // If not verified, send a verification email again
       const verifyToken = user.generateToken();
       await user.save();
-      const verificationUrl = `http://${process.env.FRONTEND_URL}/verify-email/${verifyToken}`;
+      const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verifyToken}`;
       const message = `<p>You tried to log in without verifying your email. Please verify your email by clicking <a href="${verificationUrl}">here</a>.</p>`;
 
       await sendEmail({

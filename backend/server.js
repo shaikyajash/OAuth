@@ -16,8 +16,8 @@ const app = express();
 
 //Enabling cors
 app.use(cors({
-  origin:[process.env.FRONTEND_URL],
-  credentials:true,
+  origin:[process.env.FRONTEND_URL,],
+  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 }))
 
 // Security middleware
