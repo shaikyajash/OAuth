@@ -14,16 +14,24 @@ connectDB();
 
 const app = express();
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL_2,
+  process.env.FRONTEND_URL_3,
+];
+
 //Enabling cors
 app.use(cors({
-  origin:[process.env.FRONTEND_URL,],
-  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+  origin:allowedOrigins,
+  credentials: true,
 }))
 
 // Security middleware
 app.use(helmet({ contentSecurityPolicy: false }));
-// Middleware
 
+
+
+// Middleware
 app.use(express.json());
 // Middleware to handle invalid JSON errors
 app.use((err, req, res, next) => {
@@ -35,6 +43,8 @@ app.use((err, req, res, next) => {
 });
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+
 // Routes
 app.get('/test', (req, res) => {
   res.send("It is working");
