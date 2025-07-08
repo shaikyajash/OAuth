@@ -19,7 +19,7 @@ const sendCookie = (res, name, value, statusCode = 200, expiryMinutes = 30) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       
-      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      sameSite:'None',
 
 
       expires: new Date(Date.now() + expiryMinutes * 60 * 1000), // Default to 30 minutes
