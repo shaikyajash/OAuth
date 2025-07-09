@@ -17,7 +17,7 @@ const Verification = () => {
     const verifyEmail = async () => {
       try {
         const url = `${BACKEND_URL}/auth/verify-email/${token}`;
-        const res = await axios.get(url);
+        const res = await axios.get(url,{withCredentials: true});
         setMessage(res.data.message);
       } catch (err) {
         setError(err.response?.data?.message || "Invalid or Expired Token");

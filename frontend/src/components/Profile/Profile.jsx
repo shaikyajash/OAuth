@@ -13,6 +13,11 @@ const Profile = () => {
 
 
   useEffect(() => {
+      // Debug: Log cookies and environment
+  console.log('🍪 All cookies:', document.cookie);
+  console.log('🌐 Backend URL:', BACKEND_URL);
+  console.log('🔗 Frontend URL:', import.meta.env.VITE_FRONTEND_URL);
+  
      setUser(null);
     const fetchProfile = async () => {
       try {
@@ -28,12 +33,17 @@ const Profile = () => {
     };
 
     fetchProfile();
-  }, []);
+  }, [BACKEND_URL]);
 
   const handleLogout = async () => {
     try {
       await axios.get(`${BACKEND_URL}/auth/logout`, { withCredentials: true });
       setUser(null);
+      //clear any user-related state
+      setError(null);
+      setLoading(false);
+    //clear auth token cookie
+      
       
 
       navigate("/login"); 

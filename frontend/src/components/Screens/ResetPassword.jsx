@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "../../Styles/ResetPassword.css";  // Path to your CSS file
+import "../../Styles/ResetPassword.css"; // Path to your CSS file
 import { useNavigate, useParams } from "react-router-dom";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const ResetPassword = () => {
-
-    const {token} = useParams();
+  const { token } = useParams();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleResetPassword = async () => {
     if (password !== confirmPassword) {
@@ -20,9 +19,11 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await axios.post(`${BACKEND_URL}/auth/reset-password/${token}`, {
-        password,
-      });
+      const response = await axios.post(
+        `${BACKEND_URL}/auth/reset-password/${token}`,
+        {password},
+        { withCredentials: true }
+      );
       setMessage(response.data.message);
     } catch (err) {
       setError(err.response?.data?.message || "Error resetting password");
@@ -48,14 +49,13 @@ const ResetPassword = () => {
         <button className="reset-password-button" onClick={handleResetPassword}>
           Reset Password
         </button>
-        
-      <button className="login-button" onClick={()=>navigate("/login")} >
-        Back to Login
+
+        <button className="login-button" onClick={() => navigate("/login")}>
+          Back to Login
         </button>
 
         {error && <div className="error-message">{error}</div>}
         {message && <div className="success-message">{message}</div>}
-
       </div>
     </div>
   );

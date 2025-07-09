@@ -1,6 +1,6 @@
 import React from "react";
 import Signup from "./components/Screens/Signup";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/Screens/Login";
 import Profile from "./components/Profile/Profile";
 import ForgotPassword from "./components/Screens/ForgotPassword";
@@ -10,6 +10,7 @@ import ResetPassword from "./components/Screens/ResetPassword";
 const App = () => {
   return (
     <Routes>
+      <Route path="/" element={<Navigate to="/login" replace/>} />
       <Route path="/signup" element={<Signup/>} />
       <Route path="/login" element={<Login />} />
       <Route path="/profile" element={<Profile />} />

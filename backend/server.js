@@ -15,16 +15,27 @@ connectDB();
 const app = express();
 
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  process.env.FRONTEND_URL_2,
-  process.env.FRONTEND_URL_3,
+  'https://your-vercel-app.vercel.app', // Your production frontend URL
+  'http://localhost:5173', // Local development
+  'http://localhost:3000', // Alternative local port
 ];
 
 //Enabling cors
 app.use(cors({
-  origin:allowedOrigins,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-}))
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 // Security middleware
 app.use(helmet({ contentSecurityPolicy: false }));
