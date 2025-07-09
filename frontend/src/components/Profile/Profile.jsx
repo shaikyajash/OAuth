@@ -13,6 +13,7 @@ const Profile = () => {
 
 
   useEffect(() => {
+     setUser(null);
     const fetchProfile = async () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/user/profile`, {
@@ -32,6 +33,8 @@ const Profile = () => {
   const handleLogout = async () => {
     try {
       await axios.get(`${BACKEND_URL}/auth/logout`, { withCredentials: true });
+      setUser(null);
+      
 
       navigate("/login"); 
     } catch (err) {

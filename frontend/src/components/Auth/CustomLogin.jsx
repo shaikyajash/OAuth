@@ -32,6 +32,7 @@ const CustomLogin = () => {
         },
         { withCredentials: true }
       );
+      console.log(res.data);
 
       setMessage(res.data.message);
       setEmail("");

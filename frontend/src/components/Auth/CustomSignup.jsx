@@ -26,11 +26,16 @@ const CustomSignup = () => {
       setError("");
       setMessage("");
 
-      const res = await axios.post(`${BACKEND_URL}/auth/register`, {
-        name,
-        email,
-        password,
-      });
+      const res = await axios.post(
+        `${BACKEND_URL}/auth/register`,
+        {
+          name,
+          email,
+          password,
+        },
+
+        { withCredentials: true }
+      );
       setMessage(res.data.message);
       setEmail("");
       setPassword("");
