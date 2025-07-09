@@ -19,15 +19,17 @@ const sendCookie = (res, name, value, statusCode = 200, expiryMinutes = 30) => {
       httpOnly: true,
       secure: true,
       sameSite:'None',
-      path: '/',
+     
       expires: new Date(Date.now() + expiryMinutes * 60 * 1000), // Default to 30 minutes
-      domain: undefined,
+      
     };
 
     res.status(statusCode).cookie(name, value, options).json({
       success: true,
       message: `${name} cookie sent successfully`,
     });
+
+    
   } catch (error) {
     console.error('Error sending cookie:', error);
     res.status(500).json({ success: false, message: 'Failed to send cookie' });
