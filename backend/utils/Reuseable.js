@@ -14,14 +14,14 @@ const generateJwtToken = (payload) => {
 };
 
 const sendCookie = (res, name, value, statusCode = 200, expiryMinutes = 30) => {
-  console.log(process.env.NODE_ENV);
   try {
     const options = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       sameSite:'None',
       path: '/',
       expires: new Date(Date.now() + expiryMinutes * 60 * 1000), // Default to 30 minutes
+      domain: undefined,
     };
 
     res.status(statusCode).cookie(name, value, options).json({

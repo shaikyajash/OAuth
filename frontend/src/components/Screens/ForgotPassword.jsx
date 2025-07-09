@@ -21,7 +21,9 @@ const ForgotPassword = () => {
       setError('');
       setMessage('');
 
-      const res = await axios.post(`${BACKEND_URL}/auth/forgot-password`, { email });
+      const res = await axios.post(`${BACKEND_URL}/auth/forgot-password`, { email },
+        { withCredentials: true }
+      );
 
       setMessage(res.data.message);
     } catch (err) {
