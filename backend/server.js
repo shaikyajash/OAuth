@@ -8,6 +8,7 @@ require("dotenv").config();
 // Import Routes
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const { sendCookie } = require("./utils/Reuseable");
 
 // Connect to Database
 connectDB();
@@ -49,7 +50,8 @@ app.use(cookieParser());
 
 // Routes
 app.get("/test", (req, res) => {
-  res.send("It is working");
+  return sendCookie(res, "testCookie", "This is a test cookie", 200, 30);
+
 });
 
 app.use("/api/auth", authRoutes);
