@@ -6,10 +6,12 @@ import Profile from "./components/Profile/Profile";
 import ForgotPassword from "./components/Screens/ForgotPassword";
 import Verification from "./components/Screens/Verification";
 import ResetPassword from "./components/Screens/ResetPassword";
+import { TestScreen } from "./components/Screens/TestScreen";
 
 const App = () => {
   return (
     <Routes>
+      <Route path="/test" element = {<TestScreen/>}/>
       <Route path="/" element={<Navigate to="/login" replace/>} />
       <Route path="/signup" element={<Signup/>} />
       <Route path="/login" element={<Login />} />
