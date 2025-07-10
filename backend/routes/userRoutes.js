@@ -8,7 +8,7 @@ const router = express.Router();
 
 
 
-router.get("/profile", protect,handleUserDetails);
+router.get("/profile",handleUserDetails);
 
 
 

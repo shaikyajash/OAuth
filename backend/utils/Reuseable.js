@@ -1,44 +1,58 @@
 const jwt = require("jsonwebtoken");
 
-const generateJwtToken = (payload) => {
-  try {
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "30m",
 
+const refershTokenGenerator = (payload) => {
+  try {
+    const refreshToken = jwt.sign(payload, process.env.REFRESH_SECRET, {
+      expiresIn: "7d",
     });
-    return token;
+
+    return refreshToken;
   } catch (error) {
-    console.error("Error generating token:", error);
-    throw new Error("Token generation failed");
+    console.error("Error generating refresh token:", error);
+    throw new Error("Refresh token generation failed");
   }
 };
 
-const sendCookie = (res, name, value, statusCode = 200, expiryMinutes = 30) => {
+const accessTokenGenerator =(payload) =>{
+  try{
+    const accessToken = jwt.sign(payload, process.env.ACCESS_SECRET, {
+      expiresIn: "15m",
+    });
+
+    return accessToken;
+
+  }catch(error){
+    console.error("Error generating access token:", error);
+    throw new Error("Access token generation failed");
+  }
+}
+
+const sendCookie = (res, name, value, statusCode = 200, expiryMinutes,) => {
   try {
     const options = {
       httpOnly: true,
       secure: true,
-      sameSite:'None',
+      sameSite: "None",
 
-     
-      expires: new Date(Date.now() + expiryMinutes * 60 * 1000), // Default to 30 minutes
-      
+      expires: new Date(Date.now() + expiryMinutes * 60 * 1000), 
     };
 
-    res.status(statusCode).cookie(name, value, options).json({
-      success: true,
-      message: `${name} cookie sent successfully`,
-    });
-
-
+    res
+      .status(statusCode)
+      .cookie(name, value, options)
+      .json({
+        success: true,
+        message: `${name} cookie sent successfully`,
+      });
   } catch (error) {
-    console.error('Error sending cookie:', error);
-    res.status(500).json({ success: false, message: 'Failed to send cookie' });
+    console.error("Error sending cookie:", error);
+    res.status(500).json({ success: false, message: "Failed to send cookie" });
   }
 };
 
-
 module.exports = {
-  generateJwtToken,
   sendCookie,
+  refershTokenGenerator,
+  accessTokenGenerator
 };

@@ -7,9 +7,10 @@ const protect = async (req, res, next) => {
   try {
     let token;
 
+
     // Get token from cookies or authorization header
-    if (req.cookies?.token) {
-      token = req.cookies.token;
+    if (req.cookies?.accessToken) {
+      token = req.cookies.accessToken;
     } else if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer")
@@ -22,7 +23,7 @@ const protect = async (req, res, next) => {
     }
 
     // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
 
     req.user = decoded;
     next();

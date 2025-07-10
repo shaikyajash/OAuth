@@ -4,7 +4,10 @@ const { OAuth2Client } = require("google-auth-library");
 const crypto = require("crypto");
 
 const sendEmail = require("../utils/emailServide");
-const { generateJwtToken, sendCookie } = require("../utils/Reuseable");
+const {
+  refershTokenGenerator,
+  accessTokenGenerator,
+} = require("../utils/Reuseable");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -39,7 +42,6 @@ const register = async (req, res) => {
       Verify Your Email
       </a>
         `;
-        
 
     await sendEmail({
       email: user.email,
@@ -71,7 +73,6 @@ const googleAuth = async (req, res) => {
     const ticket = await client.verifyIdToken({
       idToken: idtoken,
       audience: process.env.GOOGLE_CLIENT_ID,
-
     });
 
     const { name, email, picture, sub: googleId } = ticket.getPayload();
@@ -87,24 +88,27 @@ const googleAuth = async (req, res) => {
     //Making a temporary password for google users
     const tempPassword = crypto.randomBytes(6).toString("hex");
 
-
-
     if (user) {
       // User exists - check if they have Google ID linked
       if (!user.googleId) {
         // If no Google ID, associate the Google account
         user.googleId = googleId;
         user.picture = picture;
+        user.isVerified = true;
         await user.save();
       }
     } else {
-      // If user doesn't exist, create a new one using Google credentials
+      // If user doesn't exist, creating a new one using Google credentials
       user = await User.create({
         name,
         email,
         googleId,
         picture,
         password: tempPassword,
+        isVerified: true, 
+
+
+        
       });
     }
 
@@ -115,12 +119,22 @@ const googleAuth = async (req, res) => {
       email: user.email,
       picture: user.picture,
     };
-    const token = generateJwtToken(payload); 
+
+
+
+    // const token = generateJwtToken(payload);
+
+    const accessToken = accessTokenGenerator(payload);
+    const refreshToken = refershTokenGenerator(payload);
     //Setting cookies
-    sendCookie(res, "token", token, 200, 30);
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
 
-
-    
+    return res.status(200).json({ accessToken });
   } catch (error) {
     console.error("Error in Google Signup/Login:", error.message);
     return res
@@ -146,6 +160,7 @@ const login = async (req, res) => {
       // If not verified, send a verification email again
       const verifyToken = user.generateToken();
       await user.save();
+
       const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verifyToken}`;
       const message = `<p>You tried to log in without verifying your email. Please verify your email by clicking <a href="${verificationUrl}">here</a>.</p>`;
 
@@ -174,10 +189,20 @@ const login = async (req, res) => {
       email: user.email,
       picture: user.picture,
     };
-    const token = generateJwtToken(payload); 
+
+    // const token = generateJwtToken(payload);
+    const accessToken = accessTokenGenerator(payload);
+    const refreshToken = refershTokenGenerator(payload);
 
     //Setting cookies
-    return sendCookie(res, "token", token, 200, 30); // 30 minutes expiry
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    return res.status(200).json({ accessToken });
   } catch (error) {
     console.error("Error in login:", error.message);
     return res
@@ -186,4 +211,29 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login, googleAuth };
+const newAccessToken = async (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) {
+    return res.status(401).json({
+      message: "Refresh token not found, please login again",
+    });
+  }
+
+  try {
+    const user = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+    const payload = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
+    const newAccessToken = accessTokenGenerator(payload);
+
+    return res.status(200).json({ accessToken: newAccessToken });
+  } catch (error) {
+    return res
+      .status(403)
+      .json({ message: "Invalid refresh token, please login again" });
+  }
+};
+
+module.exports = { register, login, googleAuth, newAccessToken };
