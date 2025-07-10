@@ -17,7 +17,7 @@ const Verification = () => {
     const verifyEmail = async () => {
       try {
         const url = `${BACKEND_URL}/auth/verify-email/${token}`;
-        const res = await axios.get(url,{withCredentials: true});
+        const res = await axios.get(url, { withCredentials: true });
         setMessage(res.data.message);
       } catch (err) {
         setError(err.response?.data?.message || "Invalid or Expired Token");
@@ -34,9 +34,13 @@ const Verification = () => {
       {loading && <p className="loading-message">Verifying your email...</p>}
       {message && <div className="success-message">{message}</div>}
       {error && <div className="error-message">{error}</div>}
-      <button className="back-home-btn" onClick={() => navigate('/login')}>
+      {/* <button className="back-home-btn" onClick={() => navigate('/login')}>
         Go to Login Screen
-      </button>
+      </button> */}
+      <p style={{ textAlign: "center", fontSize: "16px", marginTop: "20px" }}>
+        ✅ Your email has been verified. Please go back to the login screen and
+        log in again.
+      </p>
     </div>
   );
 };
