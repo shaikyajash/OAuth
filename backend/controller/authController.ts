@@ -52,12 +52,41 @@ const register: RegisterController = async (req, res) => {
         // Check if user exists
         let user = await User.findOne({ email });
 
-        if (user) {
+        // If user exists and is verified, reject
+        if (user && user.isVerified) {
             res.status(400).json({ message: "User already exists" });
             return;
         }
 
-        // Create user
+        // If user exists but not verified, update their info and resend verification
+        if (user && !user.isVerified) {
+            user.name = name;
+            user.password = password; // Will be hashed by pre-save hook
+            const verifyToken = user.generateToken();
+            await user.save();
+
+            const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verifyToken}`;
+            const message = `
+    <p>Please verify your email by clicking the button below:</p>
+      <a href="${verificationUrl}" 
+       style="display: inline-block; background-color: #007bff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+      Verify Your Email
+      </a>
+        `;
+
+            await sendEmail({
+                email: user.email,
+                subject: `Email Verification`,
+                message,
+            });
+
+            res.status(200).json({
+                message: "A new verification email has been sent. Please check your inbox.",
+            });
+            return;
+        }
+
+        // Create new user
         user = await User.create({
             name,
             email,
@@ -67,6 +96,7 @@ const register: RegisterController = async (req, res) => {
         // Generating verification token
         const verifyToken = user.generateToken();
         await user.save();
+
         // Send verification email
         const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${verifyToken}`;
 
@@ -237,6 +267,10 @@ const login: LoginController = async (req, res) => {
         res.status(500).json({ message: "Error in login", error: (error as Error).message });
     }
 };
+
+
+
+
 
 const newAccessToken: NewAccessTokenController = async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
