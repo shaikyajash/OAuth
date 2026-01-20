@@ -5,7 +5,6 @@ import { useAuth } from "../../context/AuthContext";
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
 
-  console.log("PrivateRoute user:", user);
 
   if (loading) {
     // Optionally, show a loading spinner or message while auth status is loading

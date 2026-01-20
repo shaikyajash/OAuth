@@ -20,7 +20,6 @@ export const AuthProvider = ({ children }) => {
       setAccessToken(newToken);
       return newToken;
     } catch (err) {
-      console.log("⚠️ Refresh token expired or missing:", err.message);
       logout(); // optional: clear session
       return null;
     }
@@ -30,7 +29,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
 
-    setLoading(true);
+      setLoading(true);
       const storedToken = sessionStorage.getItem("accessToken");
       if (storedToken) {
         setAccessToken(storedToken);
@@ -38,7 +37,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         await fetchAccessToken();
       }
-      if(storedToken){
+      if (storedToken) {
         await fetchUserProfile(storedToken);
       }
       setLoading(false);
@@ -50,15 +49,13 @@ export const AuthProvider = ({ children }) => {
   const fetchUserProfile = async (token = accessToken) => {
     try {
 
-        setLoading(true);
+      setLoading(true);
       const res = await axios.get(`${BACKEND_URL}/user/profile`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
-      console.log("User profile fetched in context:", res.data.data);
-     
       setUser(res.data.data);
-        setLoading(false);
+      setLoading(false);
     } catch (err) {
       console.error("❌ Failed to fetch profile:", err.message);
     }
@@ -77,7 +74,7 @@ export const AuthProvider = ({ children }) => {
         withCredentials: true,
       });
     } catch (err) {
-      console.log("Logout request failed:", err.message);
+      // Logout request failed, proceed with local cleanup
     }
     sessionStorage.removeItem("accessToken");
     setAccessToken(null);
