@@ -12,7 +12,7 @@ const sendEmail = async (options: EmailOptions): Promise<void> => {
     });
 
     const mailOptions = {
-        from: `"MetaSpace" <${process.env.EMAIL_USER}>`,
+        from: `"Animestry" <${process.env.EMAIL_USER}>`,
         to: options.email,
         subject: options.subject,
         html: options.message,

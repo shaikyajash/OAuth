@@ -36,7 +36,7 @@ const CustomLogin = () => {
       const accessToken = res.data.accessToken;
       if (accessToken) {
         login(accessToken); // Use context login to store token and fetch user
-        
+
       }
 
       setMessage("Login successful");
@@ -95,7 +95,7 @@ const CustomLogin = () => {
       </button>
 
       <p>
-        New to MetaSpace?{" "}
+        New to Animestry?{" "}
         <span style={{ color: "blue", cursor: "pointer" }} onClick={goToSignup}>
           Register Now
         </span>
