@@ -52,6 +52,7 @@ const register: RegisterController = async (req, res) => {
         // Check if user exists
         let user = await User.findOne({ email });
 
+        console.log("verified : ", user?.isVerified);
         // If user exists and is verified, reject
         if (user && user.isVerified) {
             res.status(400).json({ message: "User already exists" });
@@ -204,6 +205,9 @@ const googleAuth: GoogleAuthController = async (req, res) => {
 
 // Login Controller
 const login: LoginController = async (req, res) => {
+
+
+    console.log("Login endpoint hit!");
     try {
         const { email, password } = req.body;
         //Finding the user by email
@@ -213,6 +217,8 @@ const login: LoginController = async (req, res) => {
             res.status(401).json({ message: "Invalid credentials" });
             return;
         }
+
+        console.log("isverified: ", user?.isVerified)
 
         // Check if the user has verified their email
         if (!user.isVerified) {
