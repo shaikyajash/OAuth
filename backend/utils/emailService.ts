@@ -1,30 +1,26 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { EmailOptions } from "../types";
 
 const sendEmail = async (options: EmailOptions): Promise<void> => {
     console.log("Attempting to send email to:", options.email);
-    console.log("EMAIL_USER configured:", process.env.EMAIL_USER ? "Yes" : "No");
-    console.log("EMAIL_PASS configured:", process.env.EMAIL_PASS ? "Yes" : "No");
+    console.log("RESEND_API_KEY configured:", process.env.RESEND_API_KEY ? "Yes" : "No");
 
-    const transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-        },
-    });
-
-    const mailOptions = {
-        from: `"Animestry" <${process.env.EMAIL_USER}>`,
-        to: options.email,
-        subject: options.subject,
-        html: options.message,
-    };
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent successfully:", info.messageId);
+        const { data, error } = await resend.emails.send({
+            from: process.env.RESEND_FROM_EMAIL || "Animestry <onboarding@resend.dev>",
+            to: options.email,
+            subject: options.subject,
+            html: options.message,
+        });
+
+        if (error) {
+            console.error("Email sending failed:", error);
+            throw error;
+        }
+
+        console.log("Email sent successfully:", data?.id);
     } catch (error) {
         console.error("Email sending failed:", error);
         throw error; // Re-throw to let the controller handle it
